@@ -9,11 +9,11 @@ This project explores the column lineage of the dbt testing project [jaffle_shop
 Install the dbt project using the instructions in the [jaffle_shop](https://github.com/dbt-labs/jaffle_shop_duckdb) repo:
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+python3 -m venv dbt_jaffle_shop_venv
+source dbt_jaffle_shop_venv/bin/activate
 python3 -m pip install --upgrade pip
 python3 -m pip install -r requirements.txt
-source venv/bin/activate
+source dbt_jaffle_shop_venv/bin/activate
 ```
 
 Then run the dbt project to generate a `manifest.json`:
