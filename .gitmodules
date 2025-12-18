@@ -1,0 +1,3 @@
+[submodule "jaffle_shop_duckdb"]
+	path = jaffle_shop_duckdb
+    url = https://github.com/dbt-labs/jaffle_shop_duckdb
