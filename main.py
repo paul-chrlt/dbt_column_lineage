@@ -1,4 +1,5 @@
 import json
+import re
 import pandas as pd
 
 from sqlglot import parse_one, exp
@@ -68,18 +69,21 @@ for node_key in dbt_lineage:
         except SqlglotError as e:
             print(f"Error computing lineage for {node_key}.{column_name}")
             continue
-        upstream_elements = set()
+        upstream_elements = list()
         element_ancestors = list()
         i=0
         for element in node_lineage.walk():
             element_name = element.name
-            upstream_elements.add(element.name)
+            if element.name != "*":
+                debug_element = element
+            upstream_elements.append(element.name)
             table = element.expression.find(exp.Table)
             if element.expression.find(exp.Table):
                 element_ancestors.append({
                         "db":table.db,
                         "catalog":table.catalog,
-                        "table":table.name
+                        "table":table.name,
+                        "column":upstream_elements[-2].split(".")[-1]
                     })
             i+=1
         

@@ -1,6 +1,6 @@
-# dbt_column_lineage
+# dbt column lineage
 
-This project explores the column lineage of the dbt testing project [jaffle_shop](https://github.com/dbt-labs/jaffle_shop_duckdb), using duckdb to allow for locally reproducible code.
+This project computes the column lineage of the dbt testing project [jaffle_shop](https://github.com/dbt-labs/jaffle_shop_duckdb) thanks to SQLGlot.
 
 ## Setup
 
@@ -55,28 +55,70 @@ python3 ./main.py
 
 This will generate a `dbt_lineage.json` file containing the whole column lineage of this dbt project.
 
-As an example, for the model `stg_orders` and the output column `customer_id`:
+## Output
 
-* first select is a `select *`
-* a cte then renames `user_id` to `customer_id`
-* finally, the last select is also a `select *`
+[full json output](./jaffleshop_lineage.json)
 
-For this example, here is what we can find in the lineage (full output: `jaffleshop_lineage.json`):
-````json
-{
-   "intermediate_columns":{
-      "*",
-      "customer_id",
-      "renamed.customer_id",
-      "source.user_id"
-   },
-   "ancestor_columns":[
-      {
-         "db":"main",
-         "catalog":"jaffle_shop",
-         "table":"raw_orders"
-      }
-   ]
-}
-#@todo: include first known column name in ancestor_column
+As an example, the model `stg_orders`, for the output column `customer_id`:
+
+* first selects all columns from the source with `select *`
+* `user_id` is renamed to `customer_id` in a CTE
+* finally, the last select is also a `select *` from the renaming CTE
+
+<details>
+
+<summary>`stg_orders` source</summary>
+
+```sql
+with source as (
+
+    select * from {{ ref('raw_orders') }}
+
+),
+
+renamed as (
+
+    select
+        id as order_id,
+        user_id as customer_id,
+        order_date,
+        status
+
+    from source
+
+)
+
+select * from renamed
 ```
+</details>
+
+For this example, this is the subset of the lineage for `customer_id`:
+
+```json
+{
+   "customer_id":{
+      "intermediate_columns":[
+         "customer_id",
+         "renamed.customer_id",
+         "source.user_id",
+         "*"
+      ],
+      "ancestor_columns":[
+         {
+            "db":"main",
+            "catalog":"jaffle_shop",
+            "table":"raw_orders",
+            "column":"user_id"
+         }
+      ]
+   }
+}
+```
+
+As expected, we get:
+
+* the final column output is customer_id
+* intermediate column names are *, user_id, and customer_id
+* the ancestor column is user_id, from the database main, dataset jaffle_shop, table raw_orders
+
+ _Nice_ 💯
