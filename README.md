@@ -2,8 +2,7 @@
 
 This project computes the column lineage of the dbt testing project [jaffle_shop](https://github.com/dbt-labs/jaffle_shop_duckdb) thanks to SQLGlot.
 
-
-## Sample output - stg_orders.customer_id
+## Example
 
 ### dbt model
 
@@ -66,13 +65,15 @@ This is the extract of the lineage for `customer_id`:
 
 As expected, we get:
 
-* the final column output is customer_id
-* intermediate column names are *, user_id, and customer_id
-* the ancestor column is user_id, from the database main, dataset jaffle_shop, table raw_orders
+* the final column output is `customer_id`
+* intermediate column names are `*`, `user_id`, and `customer_id`
+* the ancestor column is `user_id`, from the database `main`, dataset `jaffle_shop`, table `raw_orders`
 
 _Nice_ 💯
 
 ## Setup
+
+Instructions to reproduce locally or test it with your own `manifest.json` =)
 
 ### dbt project
 
