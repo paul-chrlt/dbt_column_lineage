@@ -5,6 +5,8 @@ This project computes the column lineage of the dbt testing project [jaffle_shop
 
 ## Sample output - stg_orders.customer_id
 
+### dbt model
+
 As an example of the lineage, let's take the model `stg_orders` and the output column `customer_id`:
 
 * first CTE imports all columns from the source with a `select *`
@@ -12,10 +14,6 @@ As an example of the lineage, let's take the model `stg_orders` and the output c
 * finally, the last select is also a `select *` from the renaming CTE
 
 ➡️ column name is not explicit in the import, neither in the export, and column name output differs from input
-
-<details>
-
-<summary>stg_orders source</summary>
 
 ```sql
 with source as (
@@ -38,7 +36,8 @@ renamed as (
 
 select * from renamed
 ```
-</details>
+
+### Computed lineage
 
 The [script](./main.py) has been run on the whole dbt project and produced its columns lineage [as this json file](./jaffleshop_lineage.json).
 
