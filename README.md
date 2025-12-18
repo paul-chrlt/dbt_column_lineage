@@ -2,6 +2,77 @@
 
 This project computes the column lineage of the dbt testing project [jaffle_shop](https://github.com/dbt-labs/jaffle_shop_duckdb) thanks to SQLGlot.
 
+
+## Sample output - stg_orders.customer_id
+
+As an example of the lineage, let's take the model `stg_orders` and the output column `customer_id`:
+
+* first CTE imports all columns from the source with a `select *`
+* column `user_id` is renamed to `customer_id` in a followinf CTE
+* finally, the last select is also a `select *` from the renaming CTE
+
+➡️ column name is not explicit in the import, neither in the export, and column name output differs from input
+
+<details>
+
+<summary>stg_orders source</summary>
+
+```sql
+with source as (
+
+    select * from {{ ref('raw_orders') }}
+
+),
+
+renamed as (
+
+    select
+        id as order_id,
+        user_id as customer_id,
+        order_date,
+        status
+
+    from source
+
+)
+
+select * from renamed
+```
+</details>
+
+The [script](./main.py) has been run on the whole dbt project and produced its columns lineage [as this json file](./jaffleshop_lineage.json).
+
+This is the extract of the lineage for `customer_id`:
+
+```json
+{
+   "customer_id":{
+      "intermediate_columns":[
+         "customer_id",
+         "renamed.customer_id",
+         "source.user_id",
+         "*"
+      ],
+      "ancestor_columns":[
+         {
+            "db":"main",
+            "catalog":"jaffle_shop",
+            "table":"raw_orders",
+            "column":"user_id"
+         }
+      ]
+   }
+}
+```
+
+As expected, we get:
+
+* the final column output is customer_id
+* intermediate column names are *, user_id, and customer_id
+* the ancestor column is user_id, from the database main, dataset jaffle_shop, table raw_orders
+
+_Nice_ 💯
+
 ## Setup
 
 ### dbt project
@@ -54,71 +125,3 @@ python3 ./main.py
 ```
 
 This will generate a `dbt_lineage.json` file containing the whole column lineage of this dbt project.
-
-## Output
-
-[full json output](./jaffleshop_lineage.json)
-
-As an example, the model `stg_orders`, for the output column `customer_id`:
-
-* first selects all columns from the source with `select *`
-* `user_id` is renamed to `customer_id` in a CTE
-* finally, the last select is also a `select *` from the renaming CTE
-
-<details>
-
-<summary>`stg_orders` source</summary>
-
-```sql
-with source as (
-
-    select * from {{ ref('raw_orders') }}
-
-),
-
-renamed as (
-
-    select
-        id as order_id,
-        user_id as customer_id,
-        order_date,
-        status
-
-    from source
-
-)
-
-select * from renamed
-```
-</details>
-
-For this example, this is the subset of the lineage for `customer_id`:
-
-```json
-{
-   "customer_id":{
-      "intermediate_columns":[
-         "customer_id",
-         "renamed.customer_id",
-         "source.user_id",
-         "*"
-      ],
-      "ancestor_columns":[
-         {
-            "db":"main",
-            "catalog":"jaffle_shop",
-            "table":"raw_orders",
-            "column":"user_id"
-         }
-      ]
-   }
-}
-```
-
-As expected, we get:
-
-* the final column output is customer_id
-* intermediate column names are *, user_id, and customer_id
-* the ancestor column is user_id, from the database main, dataset jaffle_shop, table raw_orders
-
- _Nice_ 💯
