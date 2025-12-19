@@ -67,9 +67,9 @@ As expected, we get:
 
 * the final column output is `customer_id`
 * intermediate column names are `*`, `user_id`, and `customer_id`
-* the ancestor column is `user_id`, from the database `main`, dataset `jaffle_shop`, table `raw_orders`
+* the ancestor column is `user_id`, from the database `main`, dataset `jaffle_shop`, table `raw_orders` 
 
-_Nice_ 💯
+_Now time to traverse all child nodes using dbt table lineage_ 🔥
 
 ## Setup
 
