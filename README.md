@@ -1,6 +1,6 @@
 # dbt column lineage
 
-This project computes the column lineage of the dbt testing project [jaffle_shop](https://github.com/dbt-labs/jaffle_shop_duckdb) thanks to SQLGlot.
+This project computes the column lineage of the dbt testing project [jaffle_shop](https://github.com/dbt-labs/jaffle_shop_duckdb) thanks to [SQLGlot](https://sqlglot.com/sqlglot.html).
 
 ## Example
 
